@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: go-app-container
-        image: eu.gcr.io/tao-dev-281909/cam-dev:latest
+        image: eu.gcr.io/path/to/image:latest
         resources:
           limits:
             memory: "128Mi"

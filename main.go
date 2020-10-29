@@ -8,10 +8,9 @@ import (
 	"net/http"
 	"sync"
 
-	"web-app/pubsub/publisher"
-	"web-app/pubsub/subscriber"
-
+	"web-app/pubsub"
 	"web-app/utils"
+	//"github.com/siwane/golang-pubsub/utils"
 )
 
 var (
@@ -23,20 +22,23 @@ var (
 const maxMessages = 10
 
 func main() {
-    // Load .env
-    utils.Load()
+	// Load .env
+	utils.Load()
 
-    // Initialise pubsub
-	publisher.Init()
+	// Initialise pubsub
+	pubsub.Init()
 
-    // Declare http routing
+	// Declare http routing
 	http.HandleFunc("/", listHandler)
 	http.HandleFunc("/pubsub/publish", publishHandler)
 	http.HandleFunc("/pubsub/push", pushHandler)
+
+	// sh
+	// loop subscribe interaction
 	http.HandleFunc("/pubsub/subscribe", subscribeHandler)
 
-    // Listen and Serve
-    port := utils.Getenv("PORT", "8080")
+	// Listen and Serve
+	port := utils.Getenv("PORT", "8080")
 	log.Printf("Listening on port %s", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
@@ -49,7 +51,7 @@ func subscribeHandler(w http.ResponseWriter, r *http.Request) {
 	projectID := utils.MustGetenv("GOOGLE_CLOUD_PROJECT")
 	subID := utils.MustGetenv("PUBSUB_SUBSCRIPTION_ID")
 
-	subscriber.PullMsgsConcurrenyControl(log.Writer(), projectID, subID)
+	pubsub.PullMsgsConcurrenyControl(log.Writer(), projectID, subID)
 }
 
 func pushHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,7 +62,7 @@ func pushHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad token", http.StatusBadRequest)
 	}
 
-	msg := publisher.CreatePushRequest()
+	msg := &pubsub.PushRequest{}
 	if err := json.NewDecoder(r.Body).Decode(msg); err != nil {
 		http.Error(w, fmt.Sprintf("Could not decode body: %v", err), http.StatusBadRequest)
 		return
@@ -89,7 +91,7 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 func publishHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s - %s", "Publish request", r.RequestURI)
 
-	if _, err := publisher.SendMessage(r.FormValue("payload")); err != nil {
+	if _, err := pubsub.SendMessage(r.FormValue("payload")); err != nil {
 		http.Error(w, fmt.Sprintf("Could not publish message: %v", err), 500)
 		return
 	}

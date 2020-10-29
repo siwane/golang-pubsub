@@ -1,4 +1,4 @@
-package publisher
+package pubsub
 
 import (
 	"context"
@@ -18,10 +18,10 @@ var (
 
 type PushRequest struct {
 	Message struct {
-        Attributes map[string]string
-        Data       []byte
-        ID         string `json:"message_id"`
-    }
+		Attributes map[string]string
+		Data       []byte
+		ID         string `json:"message_id"`
+	}
 	Subscription string
 }
 
@@ -46,10 +46,6 @@ func Init() {
 	}
 
     log.Printf("[PUBSUB] up and ready.")
-}
-
-func CreatePushRequest() *PushRequest {
-    return &PushRequest{}
 }
 
 func SendMessage(payload string) (string, error) {

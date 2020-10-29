@@ -9,6 +9,4 @@ require (
 
 replace (
 	web-app/utils => ./utils/env.go
-	web-app/pubsub/publisher => ./pubsub/publisher/publisher.go
-	web-app/pubsub/subscriber => ./pubsub/subscriber/subscriber.go
 )
