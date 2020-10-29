@@ -1,0 +1,4 @@
+skaffold.yaml
+.env
+deployment.yaml
+.idea
